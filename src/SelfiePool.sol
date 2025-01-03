@@ -60,7 +60,7 @@ contract SelfiePool is IERC3156FlashLender, ReentrancyGuard {
         }
         //@audit no checks on amount to withdraw, hope no issue
         //@audit no checks on transfer, hope no issues
-        //@audit, possible scenario, if user takes flashloan to vote,then steal money in the contract
+        //@audit, possible scenario, if user takes flashloan to vote,then steal money in the contract,maybe by delegating votes to another address
         token.transfer(address(_receiver), _amount);
         if (_receiver.onFlashLoan(msg.sender, _token, _amount, 0, _data) != CALLBACK_SUCCESS) {
             revert CallbackFailed();

